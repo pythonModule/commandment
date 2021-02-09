@@ -7,7 +7,9 @@ Attributes:
 """
 
 import os
-import apns2
+from apns2.client import APNsClient
+from apns2.payload import Payload
+from apns2.response import Response
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
@@ -17,7 +19,7 @@ from commandment.models import Device
 import json
 
 
-def get_apns() -> apns2.APNSClient:
+def get_apns() -> APNsClient:
     apns = getattr(g, '_apns', None)
     
     if apns is None:
@@ -64,7 +66,7 @@ def get_apns() -> apns2.APNSClient:
     return apns
 
 
-class MDMPayload(apns2.Payload):
+class MDMPayload(Payload):
     """A class representing an MDM APNs message payload."""
     def __init__(self, push_magic: str) -> None:
         """Constructor
@@ -79,7 +81,7 @@ class MDMPayload(apns2.Payload):
         return json.dumps({'mdm': self._push_magic})
 
 
-def push_to_device(device: Device) -> apns2.Response:
+def push_to_device(device: Device) -> Response:
     """Issue a `Blank Push` to a device.
     
     If the push token is invalid then it will be automatically set to None
